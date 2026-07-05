@@ -63,3 +63,4 @@ on icon links.
 All content is data-driven at the top of `src/App.jsx` (`EXPERIENCES`, `ACHIEVEMENTS`,
 `TECH_STACK`, `STATS`, `EDUCATION_HIGHLIGHTS`, `ROLES`, `SOCIALS`). To refresh the résumé,
 replace both `Resume_Victor.pdf` (repo root) and `public/Resume_Victor.pdf`.
+
