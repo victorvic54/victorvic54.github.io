@@ -6,6 +6,7 @@ import MrOops, {
   storeRepeatDelay,
   REPEAT_DELAY_RANGE
 } from './MrOops';
+import { startMusic, stopMusic } from './audio';
 import rollingStonesImg from '../../games/rolling_stones.jpeg';
 import ironCannonsImg from '../../games/iron_cannons.jpeg';
 import laserWeaponImg from '../../games/laser_weapon.jpeg';
@@ -117,6 +118,14 @@ export default function GamesPage() {
 
   const activeMode = MODES.find((m) => m.key === modeKey);
 
+  // Loop the soundtrack while a game is in progress; silence it on the menu.
+  // Retries keep modeKey set, so the track plays continuously across them.
+  useEffect(() => {
+    if (modeKey !== null) startMusic();
+    else stopMusic();
+    return stopMusic;
+  }, [modeKey]);
+
   return (
     <div className="games-page">
       <CosmicCanvas />
@@ -159,7 +168,7 @@ export default function GamesPage() {
               Mr. Oops<span className="games-title-bang">!!</span>
             </h1>
             <p className="games-subtitle">
-              A fan tribute to the classic iOS dodge game. Pick your hazard, watch the warning
+              Recreating my childhood game. Pick your hazard, watch the warning
               arrows, and survive as long as you can.
             </p>
 

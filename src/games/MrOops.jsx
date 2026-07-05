@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { playSwipe, isMuted, setMuted } from './audio';
 
-// Mr. Oops!! — a fan tribute to the classic iOS dodge game. A stickman on a
-// grid dodges lane-based hazards that telegraph with flashing edge arrows.
+// Mr. Oops!!
+// A stickman on a grid dodges lane-based hazards that telegraph with flashing edge arrows.
 // Pure canvas rendering driven by a fixed requestAnimationFrame loop; React
 // only handles the HUD and overlays.
 
@@ -120,6 +121,7 @@ export default function MrOops({ modeKey, difficulty, title, onExit }) {
   const [result, setResult] = useState(null); // { score, best, isNew }
   const [best, setBest] = useState(() => readBest(modeKey, difficulty));
   const [runId, setRunId] = useState(0);
+  const [muted, setMutedState] = useState(isMuted);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -189,6 +191,7 @@ export default function MrOops({ modeKey, difficulty, title, onExit }) {
       player.animT = 0;
       player.leanX = dx;
       player.leanY = dy;
+      playSwipe();
     };
 
     const onKeyDown = (e) => {
@@ -767,6 +770,14 @@ export default function MrOops({ modeKey, difficulty, title, onExit }) {
             <em ref={scoreRef}>0.0</em>s
           </span>
           <span className="oops-hud-best">Best {best.toFixed(1)}s</span>
+          <button
+            className="oops-hud-mute"
+            onClick={() => setMutedState(setMuted(!muted))}
+            title={muted ? 'Unmute sound' : 'Mute sound'}
+            aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+          >
+            {muted ? '🔇' : '🔊'}
+          </button>
         </div>
       </div>
 
