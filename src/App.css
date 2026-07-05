@@ -238,6 +238,9 @@ section {
   box-shadow: inset 0 0 0 1px rgba(148, 163, 255, 0.25);
 }
 
+/* The arcade entrance lives on the rocket in the right rail (SideRails) and
+   in the footer — not in the header nav. */
+
 /* --------------------------------------------------------------------------
    Hero
    -------------------------------------------------------------------------- */
@@ -1250,6 +1253,26 @@ section {
   color: var(--cyan);
 }
 
+.footer-games-link {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .footer-games-link {
+    display: inline-block;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: 8px;
+    transition: color 0.25s;
+  }
+
+  .footer-games-link:hover {
+    color: var(--cyan);
+  }
+}
+
 .footer-social {
   display: flex;
   gap: 0.4rem;
@@ -1428,6 +1451,81 @@ section {
   flex-direction: column;
   align-items: center;
   animation: rocket-sway 3.4s ease-in-out infinite;
+  /* Clickable gateway to /games/ — the rail itself ignores the pointer. */
+  pointer-events: auto;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.3rem;
+  transition: filter 0.25s;
+}
+
+.rail-rocket-body:hover {
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.65));
+}
+
+.rocket-bubble {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  translate: -50% 0;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(120deg, var(--cyan), var(--violet));
+  color: #04050e;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 6px 24px rgba(2, 4, 16, 0.55), 0 0 22px rgba(34, 211, 238, 0.45);
+  animation: bubble-in 0.35s ease-out, bubble-bob 2s ease-in-out 0.35s infinite;
+}
+
+.rocket-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border: 6px solid transparent;
+  border-top-color: #5cbbe8;
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.8); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bubble-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Lift-off: brief squat, then away past the top of the viewport. */
+.rail-rocket.launching {
+  animation: rocket-launch 0.95s cubic-bezier(0.6, -0.28, 0.9, 0.6) forwards;
+  filter: drop-shadow(0 0 22px rgba(251, 191, 36, 0.55));
+}
+
+.rail-rocket.launching .rail-rocket-body {
+  animation: none;
+  cursor: default;
+}
+
+.rail-rocket.launching .rocket-flame {
+  animation: none;
+  transform: scaleY(2.6) scaleX(1.25);
+  opacity: 1;
+}
+
+@keyframes rocket-launch {
+  0% { transform: translateY(0); }
+  18% { transform: translateY(9px) scale(0.97); }
+  100% { transform: translateY(-110vh); }
 }
 
 @keyframes rocket-sway {

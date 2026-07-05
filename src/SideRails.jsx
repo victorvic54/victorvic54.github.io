@@ -352,10 +352,19 @@ function AsteroidRail() {
 
 /* ------------------------------------------------------------------------
    Right rail: ringed planet with an orbiting moon, pulsing beacons, and a
-   rocket that climbs the gutter as you scroll down the page.
+   rocket that climbs the gutter as you scroll down the page. The rocket is
+   the door to the arcade: after 5s a "click me!" bubble appears, and
+   clicking it launches the rocket and flies you to /games/.
    ------------------------------------------------------------------------ */
 function AmbientRail() {
   const rocketRef = useRef(null);
+  const [showBubble, setShowBubble] = useState(false);
+  const [launching, setLaunching] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBubble(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let rafId = 0;
@@ -375,18 +384,38 @@ function AmbientRail() {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
+  const launch = () => {
+    if (launching) return;
+    setLaunching(true);
+    setShowBubble(false);
+    // Let the lift-off animation play before leaving the page.
+    setTimeout(() => {
+      window.location.href = '/games/';
+    }, 950);
+  };
+
   return (
-    <div className="side-rail rail-right" aria-hidden="true">
-      <div className="planet-wrap">
+    <div className="side-rail rail-right">
+      <div className="planet-wrap" aria-hidden="true">
         <div className="planet">
           <span className="planet-ring" />
           <span className="planet-moon" />
         </div>
       </div>
 
-      <div className="rail-rocket" ref={rocketRef}>
-        <div className="rail-rocket-body">
-          <svg width="30" height="46" viewBox="0 0 30 46" fill="none">
+      <div className={`rail-rocket ${launching ? 'launching' : ''}`} ref={rocketRef}>
+        {showBubble && !launching && (
+          <button className="rocket-bubble" onClick={launch}>
+            click me!
+          </button>
+        )}
+        <button
+          className="rail-rocket-body"
+          onClick={launch}
+          aria-label="Launch the rocket and open the VV Arcade games page"
+          title="Fly to the games page"
+        >
+          <svg width="30" height="46" viewBox="0 0 30 46" fill="none" aria-hidden="true">
             <defs>
               <linearGradient id="vv-rocket-hull" x1="7" y1="0" x2="23" y2="0" gradientUnits="userSpaceOnUse">
                 <stop offset="0" stopColor="#f1f5f9" />
@@ -404,12 +433,12 @@ function AmbientRail() {
             <rect x="10" y="40" width="10" height="3.5" rx="1.2" fill="#2b3358" />
           </svg>
           <span className="rocket-flame" />
-        </div>
+        </button>
       </div>
 
-      <span className="beacon beacon-1" />
-      <span className="beacon beacon-2" />
-      <span className="beacon beacon-3" />
+      <span className="beacon beacon-1" aria-hidden="true" />
+      <span className="beacon beacon-2" aria-hidden="true" />
+      <span className="beacon beacon-3" aria-hidden="true" />
     </div>
   );
 }

@@ -817,6 +817,9 @@ function App() {
                   {item.label}
                 </button>
               ))}
+              <a className="footer-games-link" href="/games/">
+                Games
+              </a>
             </div>
             <div className="footer-social">
               {SOCIALS.map((social) => {
