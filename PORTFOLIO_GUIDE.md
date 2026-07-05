@@ -1,145 +1,65 @@
 # Victor Varian's Portfolio Website
 
 ## Overview
-A modern, responsive portfolio website built with React and Framer Motion, showcasing your professional experience, projects, and achievements.
+A cosmic-themed, responsive portfolio built with React, Framer Motion, and a custom
+zero-dependency 3D starfield engine. Content is synced with `Resume_Victor.pdf`.
 
-## Live Preview
-🚀 **Development Server:** http://localhost:5174/
+## Run locally
+```bash
+npm install
+npm run dev      # dev server
+npm run build    # production build into dist/
+npm run preview  # serve the production build
+```
 
-## Sections Included
+## Deployment
+Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds with Vite and
+publishes `dist/` to GitHub Pages. Files in `public/` (including `Resume_Victor.pdf`)
+are copied into `dist/` at build time, so the résumé is downloadable at
+`victorvic54.github.io/Resume_Victor.pdf`.
 
-### 1. **Hero Section**
-- Eye-catching introduction with your name and role
-- Direct call-to-action buttons for contact
-- Social media links (GitHub, LinkedIn, Kaggle)
-- Animated gradient text and scroll indicator
+## Signature visuals
+- **`src/CosmicCanvas.jsx`** — full-page 3D starfield on a `<canvas>`: perspective-projected
+  stars, constellation lines (spatial-grid linking), shooting stars, mouse-depth parallax,
+  and a warp-streak effect driven by scroll velocity. No WebGL, no dependencies.
+  Automatically reduces star count on touch devices, pauses when the tab is hidden, and
+  renders a static sky under `prefers-reduced-motion`.
+- **`src/TiltCard.jsx`** — 3D tilt-toward-cursor cards with a tracking glare highlight
+  (stats, education, achievements). Inert on touch devices.
+- **Aurora blobs, grid overlay, film-grain noise** — layered fixed backgrounds in CSS.
+- **Hero** — per-letter 3D flip-in of the name with a continuous gradient across letters,
+  plus a typewriter role rotation.
+- **Orbit system** — pure-CSS 3D gyroscope rings in the About section.
 
-### 2. **Quick Stats**
-- 3+ Years Professional Experience
-- 10B+ Rows Migrated
-- 88% Storage Saved
-- Top 1% Trading Competition
+## Sections
+1. **Hero** — name, rotating roles, CTAs (Connect / Email), socials
+2. **Stats** — 4+ years experience, 10B+ rows migrated, 88% storage saved, top 1% trading
+3. **About** — bio synced with resume + honest "weaknesses" note
+4. **Experience** — Airwallex (BE SWE, current), Shopee (BE SWE), Sensetime, Sea, Shopee (DS),
+   SAP ML Foundation
+5. **Education** — NUS BComp Hons (Distinction), SE & AI major, tuition grant + highlights
+6. **Tech stack** — languages, backend/infra, databases, frontend/mobile, ML & tooling
+7. **Achievements** — IMC Prosperity 3.0/2.0, Grab, NUS DS, JP Morgan CFG, Shopee Code
+   League ×2, SMO Silver
+8. **Contact** — email + LinkedIn, availability badge
+9. **Footer** — nav + socials
 
-### 3. **About Me**
-- Personal introduction highlighting your expertise
-- Background in Software Engineering and AI from NUS
-- Key skills visualization (Clean Code, Fast Performance, Modern Design, Collaboration)
+## Design system
+Design tokens live in `src/index.css` (`--cyan`, `--violet`, `--pink`, `--gold`, glass
+surfaces, fonts). Layout and components are in `src/App.css`. Fonts: Space Grotesk
+(display) + Inter (body) via Google Fonts.
 
-### 4. **Work Experience Timeline**
-- **Shopee Singapore** - Backend Software Engineer (June 2022 - Present)
-  - Led team of 4 engineers
-  - 25% development time improvement
-  - 10B rows database migration
-  - Clickhouse adoption (88% storage savings)
-  
-- **Sensetime Singapore** - Frontend Intern (Dec 2021 - Mar 2022)
-  - AI photo editor web app
-  
-- **Sea Singapore** - Backend Intern (May 2021 - Aug 2021)
-  - Filesystem with Linux FUSE
-  - Rust filestore engine
-  
-- **Shopee Singapore** - Data Science Intern (Dec 2020 - Apr 2021)
-  - NER neural network (3% improvement)
-  - Semantic similarity models
+Accessibility & UX: mobile-first breakpoints (960px / 640px), no horizontal overflow at
+390px, `prefers-reduced-motion` support throughout, focus-visible outlines, aria-labels
+on icon links.
 
-### 5. **Education**
-- Bachelor of Computer Science, Honors (Distinction)
-- National University of Singapore, 2022
-- Major: Software Engineering and Artificial Intelligence
-
-### 6. **Tech Stack Marquee**
-Animated scrolling showcase of technologies:
-- Languages: Python, Golang, Java, Rust, Javascript, Ruby
-- Frameworks: React, Android, Django, TensorFlow, Ruby on Rails
-- Databases: MySQL, TiDB, Clickhouse, PostgreSQL, Firebase
-- Tools: Docker, Git, Linux, AWS, JuiceFS, MinIO
-
-### 7. **Featured Projects**
-6 major projects from your career:
-1. Tax Compliance System (Shopee)
-2. Database Migration Project
-3. Clickhouse Analytics Platform
-4. AI Photo Editor Web App (Sensetime)
-5. Distributed File System (Sea)
-6. NER Tagging Neural Network
-
-### 8. **Experience Reviews**
-Testimonials from:
-- Shopee Leadership Team
-- Sea Engineering Team
-- NUS Computing
-
-### 9. **Achievements**
-All your competition wins:
-- IMC Prosperity 3.0 - Top 1% (May 2025)
-- IMC Prosperity 2.0 - Top 4% (May 2024)
-- Grab Business Case - 3rd Place (Apr 2021)
-- NUS Data Science - 1st Place (Jan 2021)
-- JP Morgan Code for Good - 1st Place (Oct 2020)
-- Shopee Code League - Top 2% (Jul 2020)
-
-### 10. **Contact Section**
-- Email: victor.vic11@yahoo.com
-- LinkedIn connection button
-- Current status badge: "CURRENTLY AT SHOPEE SINGAPORE"
-
-### 11. **Footer**
-- Navigation links
-- Social media links
-- Copyright notice
-
-## Design Features
-
-✨ **Animations**: Smooth scroll animations using Framer Motion
-🎨 **Modern UI**: Dark theme with gradient accents (purple/blue)
-📱 **Responsive**: Mobile-first design that works on all devices
-⚡ **Performance**: Optimized with Vite build tool
-🎯 **Interactive**: Hover effects and transitions throughout
-
-## Technologies Used
-
-- **React 18** - UI framework
-- **Framer Motion** - Animations
-- **Lucide React** - Icon library
-- **Vite** - Build tool and dev server
-- **CSS3** - Custom styling with CSS variables
-
-## Your Contact Information
+## Contact info (from resume)
 - **Email:** victor.vic11@yahoo.com
-- **Phone:** +65 97153877
 - **LinkedIn:** linkedin.com/in/victor-varian
 - **GitHub:** github.com/victorvic54
 - **Kaggle:** kaggle.com/victorvic
 
-## Next Steps
-
-### Optional Enhancements:
-1. **Add Project Images**: Replace text descriptions with actual screenshots
-2. **Dark/Light Mode Toggle**: Add theme switcher
-3. **Blog Section**: Share technical articles
-4. **Download Resume**: Add PDF download button
-5. **Contact Form**: Implement email form with backend
-6. **Analytics**: Add Google Analytics or similar
-7. **SEO Optimization**: Add meta tags and Open Graph
-8. **Custom Domain**: Deploy to victorvic54.github.io
-
-### To Deploy to GitHub Pages:
-```bash
-npm run build
-# Follow GitHub Pages deployment instructions
-```
-
-## File Structure
-```
-src/
-├── App.jsx          # Main React component
-├── App.css          # All styling
-├── index.css        # Global reset styles
-└── main.jsx         # React entry point
-```
-
----
-
-Built with ❤️ inspired by modern portfolio designs
-
+## Updating content
+All content is data-driven at the top of `src/App.jsx` (`EXPERIENCES`, `ACHIEVEMENTS`,
+`TECH_STACK`, `STATS`, `EDUCATION_HIGHLIGHTS`, `ROLES`, `SOCIALS`). To refresh the résumé,
+replace both `Resume_Victor.pdf` (repo root) and `public/Resume_Victor.pdf`.
