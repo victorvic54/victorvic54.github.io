@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { playSwipe, isMuted, setMuted } from './audio';
+import { playSwipe, playDeathHit, startMusic, stopMusic, isMuted, setMuted } from './audio';
 
 // Mr. Oops!!
 // A stickman on a grid dodges lane-based hazards that telegraph with flashing edge arrows.
@@ -316,6 +316,9 @@ export default function MrOops({ modeKey, difficulty, title, onExit }) {
       phaseL = 'dead';
       deadT = 0;
       shake = 11;
+      // Slam cue on the fatal hit, then cut the soundtrack for the game-over screen.
+      playDeathHit();
+      stopMusic();
       const pos = renderPos();
       const px = PAD + pos.x * CELL;
       const py = PAD + pos.y * CELL;
@@ -736,6 +739,9 @@ export default function MrOops({ modeKey, difficulty, title, onExit }) {
     setPhase('countdown');
     setResult(null);
     setBest(readBest(modeKey, difficulty));
+    // (Re)start the soundtrack for this run — a retry only bumps runId, so the
+    // GamesPage effect won't refire to bring it back after a death stops it.
+    startMusic();
     if (scoreRef.current) scoreRef.current.textContent = '0.0';
     if (waveRef.current) waveRef.current.textContent = '0';
     window.addEventListener('keydown', onKeyDown);

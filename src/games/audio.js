@@ -4,6 +4,7 @@
 // browser's autoplay block) until the player actually starts a game.
 import musicUrl from '../../assets/song/High_Score_Horizon.mp3';
 import swipeUrl from '../../assets/song/swipe.wav';
+import deathHitUrl from '../../assets/song/DoorMetalWoodHit.wav';
 
 const MUTE_KEY = 'vv-oops-muted';
 const SWIPE_VOICES = 5; // pool size so rapid steps overlap instead of cutting off
@@ -19,6 +20,7 @@ let muted = (() => {
 let music = null;
 let swipePool = null;
 let swipeIdx = 0;
+let deathHit = null;
 
 const ensureMusic = () => {
   if (!music) {
@@ -27,6 +29,14 @@ const ensureMusic = () => {
     music.volume = 0.4;
   }
   return music;
+};
+
+const ensureDeathHit = () => {
+  if (!deathHit) {
+    deathHit = new Audio(deathHitUrl);
+    deathHit.volume = 0.8;
+  }
+  return deathHit;
 };
 
 const ensureSwipePool = () => {
@@ -81,5 +91,19 @@ export const playSwipe = () => {
     if (p && p.catch) p.catch(() => {});
   } catch {
     /* ignore — a dropped swipe cue is harmless */
+  }
+};
+
+// Impact cue for the player's death (struck by a rolling stone, iron cannonball,
+// or laser beam). Fire-and-forget, from the top each time. Respects mute.
+export const playDeathHit = () => {
+  if (muted) return;
+  const a = ensureDeathHit();
+  try {
+    a.currentTime = 0;
+    const p = a.play();
+    if (p && p.catch) p.catch(() => {});
+  } catch {
+    /* ignore — a dropped death cue is harmless */
   }
 };
