@@ -6,6 +6,7 @@ import MrOops, {
   storeRepeatDelay,
   REPEAT_DELAY_RANGE
 } from './MrOops';
+import MsGulp, { readBest as readGulpBest } from './MsGulp';
 import { startMusic, stopMusic } from './audio';
 import rollingStonesImg from '../../games/rolling_stones.jpeg';
 import ironCannonsImg from '../../games/iron_cannons.jpeg';
@@ -45,6 +46,19 @@ const readDifficulty = () => {
   }
 };
 
+// The hidden cabinet: typing the right 6-digit code on the menu keypad
+// reveals VV Arcade · 02 (Ms. Gulp!!). The unlock persists per browser.
+const SECRET_CODE = '090800';
+const SECRET_KEY = 'vv-arcade-secret';
+
+const readUnlocked = () => {
+  try {
+    return localStorage.getItem(SECRET_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
 export default function GamesPage() {
   const [isDesktop, setIsDesktop] = useState(
     () => window.matchMedia(DESKTOP_QUERY).matches
@@ -54,6 +68,11 @@ export default function GamesPage() {
   const [difficulty, setDifficulty] = useState(readDifficulty);
   const [repeatDelay, setRepeatDelay] = useState(readRepeatDelay);
   const [bests, setBests] = useState({});
+  const [gulpBest, setGulpBest] = useState(0);
+  const [unlocked, setUnlocked] = useState(readUnlocked);
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const [code, setCode] = useState('');
+  const [denied, setDenied] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_QUERY);
@@ -66,7 +85,45 @@ export default function GamesPage() {
   useEffect(() => {
     if (modeKey !== null) return;
     setBests(Object.fromEntries(MODES.map((m) => [m.key, readBest(m.key, difficulty)])));
+    setGulpBest(readGulpBest(difficulty));
   }, [modeKey, difficulty]);
+
+  // Wrong code: flash ACCESS DENIED with a shake, then clear the keypad.
+  useEffect(() => {
+    if (!denied) return;
+    const t = setTimeout(() => {
+      setDenied(false);
+      setCode('');
+    }, 700);
+    return () => clearTimeout(t);
+  }, [denied]);
+
+  // The reveal animation should only play at the moment of unlocking, not
+  // every time the menu remounts with the cabinet already open.
+  useEffect(() => {
+    if (!justUnlocked) return;
+    const t = setTimeout(() => setJustUnlocked(false), 700);
+    return () => clearTimeout(t);
+  }, [justUnlocked]);
+
+  const onCodeChange = (e) => {
+    if (denied) return; // keypad is locked out during the denied flash
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setCode(digits);
+    if (digits.length < 6) return;
+    if (digits === SECRET_CODE) {
+      setUnlocked(true);
+      setJustUnlocked(true);
+      setCode('');
+      try {
+        localStorage.setItem(SECRET_KEY, '1');
+      } catch {
+        /* private mode — unlocked for this session only */
+      }
+    } else {
+      setDenied(true);
+    }
+  };
 
   const pickDifficulty = (d) => {
     setDifficulty(d);
@@ -87,7 +144,8 @@ export default function GamesPage() {
   useEffect(() => {
     if (modeKey !== null || !isDesktop) return;
     const onKey = (e) => {
-      if (e.target.tagName === 'INPUT') return; // don't fight the slider
+      if (e.target.tagName === 'INPUT') return; // don't fight the slider or keypad
+      if (e.target.closest?.('.games-secret')) return; // secret cabinet handles its own keys
       if (e.code === 'ArrowRight' || e.code === 'KeyD') {
         e.preventDefault();
         setSel((s) => (s + 1) % MODES.length);
@@ -154,6 +212,8 @@ export default function GamesPage() {
               Back to portfolio
             </a>
           </div>
+        ) : modeKey === 'gulp' ? (
+          <MsGulp difficulty={difficulty} onExit={exitToMenu} />
         ) : activeMode ? (
           <MrOops
             modeKey={activeMode.key}
@@ -252,6 +312,74 @@ export default function GamesPage() {
                 How long a key must stay held before your runner auto-repeats a step. Raise it
                 if a single tap sometimes moves you two cells.
               </p>
+            </div>
+
+            <div
+              className={`games-secret ${unlocked ? 'unlocked' : ''} ${
+                justUnlocked ? 'reveal' : ''
+              } ${denied ? 'denied' : ''}`}
+            >
+              {unlocked ? (
+                <>
+                  <p className="games-secret-kicker granted">▸ Access granted · VV Arcade · 02</p>
+                  <button
+                    className="games-mode-card games-secret-card"
+                    onClick={() => setModeKey('gulp')}
+                  >
+                    <span className="games-mode-shot games-secret-shot">
+                      <span className="games-secret-emoji" aria-hidden="true">
+                        🐍
+                      </span>
+                      <span className="games-mode-pace">Secret</span>
+                    </span>
+                    <span className="games-mode-body">
+                      <span className="games-mode-name">Ms. Gulp!!</span>
+                      <span className="games-mode-tagline">
+                        A neon serpent loose in the star-grid. Gulp stardust, snag gold
+                        stars, and don&apos;t bite your own tail.
+                      </span>
+                      <span className="games-mode-best">
+                        {gulpBest > 0
+                          ? `Best (${difficulty === 'hard' ? 'Hard' : 'Normal'}) · ${gulpBest} pts`
+                          : 'Not played yet'}
+                      </span>
+                    </span>
+                  </button>
+                  <p className="games-secret-note">
+                    This cabinet stays unlocked on this browser.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="games-secret-kicker">VV Arcade · ??</p>
+                  <p className="games-secret-copy">
+                    A second cabinet hums in the dark. Its coin slot has been replaced with a
+                    keypad…
+                  </p>
+                  <label className="games-secret-pad">
+                    <input
+                      className="games-secret-input"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      maxLength={6}
+                      value={code}
+                      onChange={onCodeChange}
+                      aria-label="Secret 6-digit code"
+                    />
+                    <span className="games-secret-slots" aria-hidden="true">
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <span key={i} className={i < code.length ? 'filled' : ''}>
+                          {code[i] ?? ''}
+                        </span>
+                      ))}
+                    </span>
+                  </label>
+                  <p className="games-secret-status" aria-live="polite">
+                    {denied ? 'Access denied' : ' '}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         )}
